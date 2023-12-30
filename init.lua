@@ -73,7 +73,56 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  {
+    'folke/which-key.nvim',
+    config = function()
+      local git_signs = require('gitsigns')
+
+      require('which-key').register({
+          s = {
+            [[<cmd>lua require("persistence").load()<cr>]], 'Load Directory Session'
+          },
+          z = {
+            "<cmd>NoNeckPain<cr>", "Zen Mode"
+          },
+          o = {
+            "<cmd>OrganizeImports<cr>", "Organize Imports"
+          },
+          e = {
+            name = "Explorer",
+            e = { "<cmd>Neotree float reveal_force_cwd=true<cr>", "Open at Current File" },
+            g = { "<cmd>Neotree git_status<cr>", "Git Status" },
+            b = { "<cmd>Neotree buffers<cr>", "Buffers" },
+            d = { "<cmd>Neotree document_symbols<cr>", "Document Symbols" },
+          },
+          g = {
+            name = "Git",
+            p = { git_signs.prev_hunk, "Previous Hunk" },
+            r = { git_signs.reset_hunk, "Reset Hunk" },
+            n = { git_signs.next_hunk, "Next Hunk" },
+            h = { git_signs.preview_hunk, "Preview Hunk" },
+          },
+          f = {
+            name = "Find"
+          },
+          d = {
+            name = "Document"
+          },
+          C = {
+            "<cmd>bufdo :Bdelete<cr>", "Close All Buffers"
+          },
+          c = {
+            "<cmd>Bdelete<cr>", "Close Buffer"
+          },
+          w = {
+            "<cmd>w<cr>", "Write Buffer"
+          },
+        },
+        { prefix = "<leader>" }
+      )
+    end
+  },
+
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -86,6 +135,7 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      current_line_blame = true,
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
 
