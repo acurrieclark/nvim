@@ -341,6 +341,70 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
+-- Select next/previous buffer
+vim.keymap.set('n', '<C-l>', ":bnext<CR>", { silent = true })
+vim.keymap.set('n', '<C-h>', ":bprevious<CR>", { silent = true })
+
+-- Remap Accidental capitals
+vim.cmd([[
+  cnoreabbrev W w
+  cnoreabbrev Wq wq
+  cnoreabbrev WQ wq
+  cnoreabbrev Q! q!
+]])
+
+-- When joining lines, keep the same cursor position
+vim.keymap.set("n", "J", "mzJ`z")
+
+-- When moving up and down the page, or searching, keep the cursor centred
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+
+-- Move to just before the last character on the line and enter insert mode
+vim.keymap.set("n", "<C-;>", "$i")
+
+-- delete/change selection, but don't add to paste register
+vim.keymap.set({ "v" }, "<leader>d", [["_d]])
+vim.keymap.set({ "v" }, "<leader>c", [["_c]])
+
+-- lose Q
+vim.keymap.set("n", "Q", "<nop>")
+
+-- Define the function to check if the current line is empty
+local function is_line_empty()
+  local line = vim.api.nvim_get_current_line()
+  return line:gsub('%s', '') == ''
+end
+
+-- Function to input a sequence of keys
+local function input_keys(keys)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, true, true), 'n', true)
+end
+
+-- Define the function to perform the custom "o" behavior
+function CustomO()
+  -- Check if the current line is empty or not
+  if is_line_empty() then
+    -- If the line is empty, add an additional new line below the new one
+    input_keys('o<Esc>O')
+  else
+    -- If the line has content, use the normal `o` command
+    input_keys('o')
+  end
+end
+
+-- `o` behaves as expected on a line with content, but adds an additional line below if empty
+vim.api.nvim_set_keymap('n', 'o', ':lua CustomO()<CR>', { noremap = true, silent = true })
+
+vim.cmd([[
+  augroup Autosave
+    autocmd!
+    autocmd BufLeave,FocusLost * silent! wall
+  augroup END
+]])
+
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
