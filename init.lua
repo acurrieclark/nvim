@@ -299,8 +299,21 @@ vim.o.timeoutlen = 300
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
 
--- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
+
+-- Minimum lines at top and bottom when scrolling
+vim.opt.scrolloff = 5
+
+-- Unified statusline
+vim.opt.laststatus = 3
+
+-- Don't continue comments with o and O
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = '*',
+  callback = function()
+    vim.opt.formatoptions:remove({ 'o' })
+  end
+})
 
 -- [[ Basic Keymaps ]]
 
