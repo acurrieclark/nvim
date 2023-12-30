@@ -408,6 +408,11 @@ vim.cmd([[
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
+  extensions = {
+    ["ui-select"] = {
+      require('telescope.themes').get_dropdown({})
+    }
+  },
   defaults = {
     mappings = {
       i = {
@@ -420,6 +425,7 @@ require('telescope').setup {
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
+pcall(require('telescope').load_extension, 'ui-select')
 
 -- Telescope live_grep in git root
 -- Function to find the git root directory based on the current buffer's path
