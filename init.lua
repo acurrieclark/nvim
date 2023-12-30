@@ -408,12 +408,14 @@ vim.cmd([[
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
-  extensions = {
-    ["ui-select"] = {
-      require('telescope.themes').get_dropdown({})
-    }
-  },
   defaults = {
+    layout_strategy = 'center',
+    layout_config = {
+      anchor = 'N',
+      width = 0.9,
+      prompt_position = 'bottom',
+      preview_cutoff = 1,
+    },
     mappings = {
       i = {
         ["<C-k>"] = require('telescope.actions').move_selection_previous, -- move to prev result
