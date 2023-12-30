@@ -114,6 +114,9 @@ require('lazy').setup({
           c = {
             "<cmd>Bdelete<cr>", "Close Buffer"
           },
+          w = {
+            name = "Workspace",
+          },
         },
         { prefix = "<leader>" }
       )
