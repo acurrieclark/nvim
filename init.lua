@@ -372,6 +372,8 @@ vim.keymap.set({ "v" }, "<leader>c", [["_c]])
 -- lose Q
 vim.keymap.set("n", "Q", "<nop>")
 
+-- TODO: Add keymap to add a line above/below current line
+
 -- Define the function to check if the current line is empty
 local function is_line_empty()
   local line = vim.api.nvim_get_current_line()
