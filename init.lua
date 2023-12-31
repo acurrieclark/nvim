@@ -408,12 +408,36 @@ vim.cmd([[
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
+  extensions = {
+    ["ui-select"] = {
+      layout_strategy = "center",
+      sorting_strategy = "ascending",
+      layout_config = {
+        prompt_position = "top",
+        width = function(_, max_columns, _)
+          return math.min(max_columns, 80)
+        end,
+
+        height = function(_, _, max_lines)
+          return math.min(max_lines, 15)
+        end,
+        anchor = "CENTER"
+      },
+      border = true,
+      borderchars = {
+        prompt = { "─", "│", " ", "│", "╭", "╮", "│", "│" },
+        results = { "─", "│", "─", "│", "├", "┤", "╯", "╰" },
+        preview = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+      },
+    }
+  },
   defaults = {
     path_display = { 'smart' },
-    layout_strategy = 'center',
+    layout_strategy = 'vertical',
     layout_config = {
       anchor = 'N',
-      width = 0.9,
+      mirror = true,
+      width = 140,
       prompt_position = 'bottom',
       preview_cutoff = 1,
     },
