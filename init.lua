@@ -308,11 +308,13 @@ vim.opt.scrolloff = 5
 vim.opt.laststatus = 3
 
 -- Don't continue comments with o and O
+local custom_o_formatting = vim.api.nvim_create_augroup('CustomOFormatting', { clear = true })
 vim.api.nvim_create_autocmd("FileType", {
   pattern = '*',
   callback = function()
     vim.opt.formatoptions:remove({ 'o' })
-  end
+  end,
+  group = custom_o_formatting,
 })
 
 -- [[ Basic Keymaps ]]
