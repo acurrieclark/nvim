@@ -6,7 +6,16 @@ return {
 
     null_ls.setup({
       sources = {
-        null_ls.builtins.formatting.prettierd,
+        null_ls.builtins.formatting.prettierd.with({
+          extra_filetypes = { "svelte" },
+        }),
+        null_ls.builtins.completion.luasnip,
+        null_ls.builtins.completion.tags,
+
+        null_ls.builtins.formatting.stylua,
+        null_ls.builtins.formatting.eslint_d,
+
+        null_ls.builtins.diagnostics.php,
       },
       -- you can reuse a shared lspconfig on_attach callback here
       on_attach = function(client, bufnr)
