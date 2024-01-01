@@ -375,6 +375,7 @@ vim.keymap.set({ "v" }, "<leader>c", [["_c]])
 vim.keymap.set("n", "Q", "<nop>")
 
 -- TODO: Add keymap to add a line above/below current line
+-- TODO: Add keymap to jump to errors rather than diagnostics
 
 -- Define the function to check if the current line is empty
 local function is_line_empty()
@@ -608,6 +609,8 @@ vim.defer_fn(function()
   }
 end, 0)
 
+local svelte_hack_group = vim.api.nvim_create_augroup("svelte_ondidchangetsorjsfile", { clear = true })
+
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(client, bufnr)
@@ -649,20 +652,20 @@ local on_attach = function(client, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 
   -- HACK: to make Svelte files work with LSP when updates are made to project ts files
-  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP", "BufWritePost" }, {
-    pattern = { "*.js", "*.ts" },
-    callback = function(ctx)
-      if client.name == "svelte" then
+  if client.name == "svelte" then
+    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP" }, {
+      pattern = { "*.js", "*.ts" },
+      callback = function(ctx)
         client.notify("$/onDidChangeTsOrJsFile", {
-          uri = ctx.match,
+          uri = ctx.file,
           changes = {
             { text = table.concat(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false), "\n") },
           },
         })
-      end
-    end,
-    group = vim.api.nvim_create_augroup("svelte_ondidchangetsorjsfile", { clear = true }),
-  })
+      end,
+      group = svelte_hack_group,
+    })
+  end
 end
 
 -- document existing key chains
@@ -683,6 +686,18 @@ require('which-key').register({
 require('mason').setup()
 require('mason-lspconfig').setup()
 
+-- TODO: Add keymap to organize imports in any language
+local function organize_imports()
+  local params = {
+    command = "_typescript.organizeImports",
+    arguments = { vim.api.nvim_buf_get_name(0) },
+    title = ""
+  }
+  vim.lsp.buf.execute_command(params)
+end
+
+local util = require 'lspconfig.util'
+
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --
@@ -696,16 +711,47 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
-  -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
+  denols = {
+    root_dir = function(fname)
+      return util.root_pattern('deno.json', 'deno.jsonc')(fname)
+    end,
+  },
+  eslint = {},
+  tsserver = {
+    root_dir = function(fname)
+      return util.root_pattern(".git")(fname)
+          or util.root_pattern('tsconfig.json')(fname)
+          or util.root_pattern('package.json', 'jsconfig.json')(fname)
+    end,
+    commands = {
+      OrganizeImports = {
+        organize_imports,
+        description = "Organize Imports"
+      }
+    }
+  },
+  intelephense = {},
+  tailwindcss = {},
+  svelte = {
+    root_dir = function(fname)
+      return util.root_pattern('svelte.config.js')(fname)
+          or util.root_pattern('package.json', 'tsconfig.json')(fname)
+    end,
+    commands = {
+      OrganizeImports = {
+        organize_imports,
+        description = "Organize Imports"
+      }
+    }
+  },
   lua_ls = {
-    Lua = {
-      workspace = { checkThirdParty = false },
-      telemetry = { enable = false },
-      -- NOTE: toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-      -- diagnostics = { disable = { 'missing-fields' } },
-    },
+    settings = {
+      Lua = {
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+        diagnostics = { disable = { 'missing-fields' } },
+      },
+    }
   },
 }
 
@@ -725,12 +771,20 @@ mason_lspconfig.setup {
 
 mason_lspconfig.setup_handlers {
   function(server_name)
-    require('lspconfig')[server_name].setup {
+    local config = {
       capabilities = capabilities,
       on_attach = on_attach,
-      settings = servers[server_name],
-      filetypes = (servers[server_name] or {}).filetypes,
     }
+
+    local server_config = servers[server_name]
+
+    if server_config then
+      for k, v in pairs(server_config) do
+        config[k] = v
+      end
+    end
+
+    require('lspconfig')[server_name].setup(config);
   end,
 }
 
