@@ -749,31 +749,53 @@ cmp.setup {
     completeopt = 'menu,menuone,noinsert',
   },
   mapping = cmp.mapping.preset.insert {
-    ['<C-n>'] = cmp.mapping.select_next_item(),
-    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-j>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        return fallback()
+      end
+    end),
+    ['<C-k>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        return fallback()
+      end
+    end),
     ['<C-b>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete {},
+    ['<C-c>'] = cmp.mapping.complete {},
     ['<CR>'] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Insert,
+      select = true,
+    },
+    ['<s-CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
     ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
+      if require("copilot.suggestion").is_visible() then
+        require("copilot.suggestion").accept()
       elseif luasnip.expand_or_locally_jumpable() then
         luasnip.expand_or_jump()
       else
-        fallback()
+        return fallback()
       end
     end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.locally_jumpable(-1) then
+      if luasnip.locally_jumpable(-1) then
         luasnip.jump(-1)
       else
-        fallback()
+        return fallback()
+      end
+    end, { 'i', 's' }),
+    ['<esc>'] = cmp.mapping(function(fallback)
+      local entries = cmp.get_entries()
+      if cmp.visible() and #entries > 1 then
+        cmp.abort()
+      else
+        return fallback()
       end
     end, { 'i', 's' }),
   },
