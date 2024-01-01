@@ -330,6 +330,26 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
+vim.keymap.set('n', '[e', function()
+  vim.diagnostic.goto_prev({
+    severity = vim.diagnostic.severity.ERROR,
+  })
+end, { desc = 'Go to previous error' })
+vim.keymap.set('n', ']e', function()
+  vim.diagnostic.goto_next({
+    severity = vim.diagnostic.severity.ERROR,
+  })
+end, { desc = 'Go to next error' })
+vim.keymap.set('n', '[w', function()
+  vim.diagnostic.goto_prev({
+    severity = vim.diagnostic.severity.WARN,
+  })
+end, { desc = 'Go to previous warning' })
+vim.keymap.set('n', ']w', function()
+  vim.diagnostic.goto_next({
+    severity = vim.diagnostic.severity.WARN,
+  })
+end, { desc = 'Go to next warning' })
 vim.keymap.set('n', '<leader>di', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
 -- [[ Highlight on yank ]]
