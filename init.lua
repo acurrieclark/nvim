@@ -716,6 +716,7 @@ local servers = {
   },
   eslint = {},
   tsserver = {
+    filetypes = { 'javascript', 'typescript', 'svelte' },
     root_dir = function(fname)
       return util.root_pattern(".git")(fname)
           or util.root_pattern('tsconfig.json')(fname)
@@ -857,6 +858,7 @@ cmp.setup {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'path' },
+    { name = 'buffer' },
   },
 }
 
