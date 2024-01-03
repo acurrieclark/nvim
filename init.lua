@@ -329,6 +329,10 @@ vim.keymap.set('n', ']w', function()
 end, { desc = 'Go to next warning' })
 vim.keymap.set('n', '<leader>di', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
+-- Quickly envoke the q macro
+vim.keymap.set('n', 'Q', "@q")
+vim.keymap.set('v', 'Q', ":norm @q<CR>")
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -367,9 +371,6 @@ vim.keymap.set("n", "<C-;>", "$i")
 -- delete/change selection, but don't add to paste register
 vim.keymap.set({ "v" }, "<leader>d", [["_d]])
 vim.keymap.set({ "v" }, "<leader>c", [["_c]])
-
--- lose Q
-vim.keymap.set("n", "Q", "<nop>")
 
 -- add a line above/below current line
 vim.keymap.set("n", "]<space>", [[o<Esc>0"_Dk]])
