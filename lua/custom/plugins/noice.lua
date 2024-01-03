@@ -4,6 +4,9 @@ return {
   -- TODO: Hide Info level messages?
   -- notify = {},
   opts = {
+    messages = {
+      view_search = false
+    },
     lsp = {
       override = {
         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,

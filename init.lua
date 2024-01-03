@@ -186,20 +186,6 @@ require('lazy').setup({
       end,
     },
   },
-
-  {
-    -- Set lualine as statusline
-    'nvim-lualine/lualine.nvim',
-    -- See `:help lualine.txt`
-    opts = {
-      options = {
-        theme = 'catppuccin',
-        section_separators = { left = '', right = '' },
-        component_separators = '',
-      },
-    },
-  },
-
   {
     -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
@@ -294,6 +280,9 @@ vim.opt.scrolloff = 5
 
 -- Unified statusline
 vim.opt.laststatus = 3
+
+-- Don't show mode status anywhere but in LuaLine
+vim.opt.showmode = false
 
 -- Don't continue comments with o and O
 local custom_o_formatting = vim.api.nvim_create_augroup('CustomOFormatting', { clear = true })
@@ -555,7 +544,7 @@ vim.keymap.set('n', '<leader>ds', telescope_functions.document_symbols, { desc =
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'svelte', 'html' },
+    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash', 'svelte', 'html', 'regex', 'markdown_inline' },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = true,
