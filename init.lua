@@ -78,7 +78,7 @@ require('lazy').setup({
           },
           e = {
             name = "Explorer",
-            e = { "<cmd>Neotree float reveal_force_cwd=true<cr>", "Open at Current File" },
+            e = { "<cmd>Neotree current<cr>", "Open at Current File" },
             g = { "<cmd>Neotree git_status<cr>", "Git Status" },
             b = { "<cmd>Neotree buffers<cr>", "Buffers" },
             d = { "<cmd>Neotree document_symbols<cr>", "Document Symbols" },
