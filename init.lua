@@ -54,6 +54,7 @@ require('lazy').setup({
       -- Adds LSP completion capabilities
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
+      'hrsh7th/cmp-buffer',
 
       -- Adds a number of user-friendly snippets
       'rafamadriz/friendly-snippets',
@@ -78,7 +79,7 @@ require('lazy').setup({
           },
           e = {
             name = "Explorer",
-            e = { "<cmd>Neotree current<cr>", "Open at Current File" },
+            e = { "<cmd>Neotree current reveal<cr>", "Open at Current File" },
             g = { "<cmd>Neotree git_status<cr>", "Git Status" },
             b = { "<cmd>Neotree buffers<cr>", "Buffers" },
             d = { "<cmd>Neotree document_symbols<cr>", "Document Symbols" },
