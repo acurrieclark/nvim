@@ -25,7 +25,6 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- Git related plugins
   'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
@@ -74,6 +73,9 @@ require('lazy').setup({
           z = {
             "<cmd>NoNeckPain<cr>", "Zen Mode"
           },
+          R = {
+            "<cmd>= vim.lsp.buf.rename()<cr>", "References"
+          },
           o = {
             "<cmd>OrganizeImports<cr>", "Organize Imports"
           },
@@ -116,14 +118,6 @@ require('lazy').setup({
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
       current_line_blame = true,
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
@@ -179,8 +173,8 @@ require('lazy').setup({
         end, { desc = 'git diff against last commit' })
 
         -- Toggles
-        map('n', '<leader>tb', gs.toggle_current_line_blame, { desc = 'toggle git blame line' })
-        map('n', '<leader>td', gs.toggle_deleted, { desc = 'toggle git show deleted' })
+        map('n', '<leader>Tb', gs.toggle_current_line_blame, { desc = 'toggle git blame line' })
+        map('n', '<leader>Td', gs.toggle_deleted, { desc = 'toggle git show deleted' })
 
         -- Text object
         map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'select git hunk' })
@@ -197,7 +191,16 @@ require('lazy').setup({
   },
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim',  opts = {} },
+  {
+    'numToStr/Comment.nvim',
+    config = function(_, opts)
+      require('Comment').setup(opts)
+
+      local ft = require('Comment.ft')
+      ft.set('blade', { '{{-- %s --}}', '{{-- %s --}}' })
+      ft.set('antlers', { '{{# %s #}}', '{{# %s #}}' })
+    end
+  },
 
   -- Fuzzy Finder (files, lsp, etc)
   {
@@ -346,8 +349,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Select next/previous buffer
-vim.keymap.set('n', '<C-l>', ":bnext<CR>", { silent = true })
-vim.keymap.set('n', '<C-h>', ":bprevious<CR>", { silent = true })
+vim.keymap.set('n', '<C-l>', ":wincmd w<CR>", { silent = true })
+vim.keymap.set('n', '<C-h>', ":wincmd p<CR>", { silent = true })
 
 -- Remap Accidental capitals
 vim.cmd([[
@@ -455,6 +458,11 @@ require('telescope').setup {
       },
     },
   },
+  pickers = {
+    lsp_references = {
+      path_display = { 'smart' },
+    }
+  },
 }
 
 -- Enable telescope fzf native, if installed
@@ -490,6 +498,7 @@ local function live_grep_git_root()
   local git_root = find_git_root()
   if git_root then
     require('telescope.builtin').live_grep {
+      path_display = { 'smart' },
       search_dirs = { git_root },
     }
   end
@@ -512,6 +521,9 @@ end, { desc = '[/] Fuzzily search in current buffer' })
 
 local function telescope_live_grep_open_files()
   require('telescope.builtin').live_grep {
+    defaults = {
+      path_display = { 'smart' },
+    },
     grep_open_files = true,
     prompt_title = 'Live Grep in Open Files',
   }
@@ -607,6 +619,23 @@ vim.defer_fn(function()
       },
     },
   }
+
+  local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+  parser_config["blade"] = {
+    install_info = {
+      url = "https://github.com/EmranMR/tree-sitter-blade",
+      files = { "src/parser.c" },
+      branch = "main",
+    },
+    filetype = "blade"
+  }
+  vim.filetype.add({
+    pattern = {
+      ['.*%.antlers%.php'] = 'antlers.php',
+      ['.*%.antlers%.html'] = 'antlers.html',
+      ['.*%.blade%.php'] = 'blade',
+    },
+  })
 end, 0)
 
 local svelte_hack_group = vim.api.nvim_create_augroup("svelte_ondidchangetsorjsfile", { clear = true })
@@ -624,11 +653,22 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
-  nmap('<leader>r', vim.lsp.buf.rename, 'Rename')
   nmap('<c-cr>', vim.lsp.buf.code_action, 'Code Action')
 
-  nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
-  nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+  nmap('gd', function()
+    require('telescope.builtin').lsp_definitions({
+      defaults = {
+        path_display = { 'smart' },
+      },
+    })
+  end, '[G]oto [D]efinition')
+  nmap('gr', function()
+    require('telescope.builtin').lsp_references({
+      defaults = {
+        path_display = { 'smart' },
+      },
+    })
+  end, '[G]oto [R]eferences')
   nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
   nmap('gy', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
 
@@ -671,8 +711,9 @@ end
 -- document existing key chains
 require('which-key').register {
   ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-  ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
+  ['<leader>T'] = { name = '[T]oggle', _ = 'which_key_ignore' },
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+  ["<leader>t"] = { name = "Tests" },
 }
 -- register which-key VISUAL mode
 -- required for visual <leader>hs (hunk stage) to work
@@ -711,10 +752,14 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
+  ["blade-formatter"] = {},
   denols = {
     root_dir = function(fname)
       return util.root_pattern('deno.json', 'deno.jsonc')(fname)
     end,
+  },
+  emmet_ls = {
+    filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'sass', 'scss', 'html', 'css', 'svelte' },
   },
   eslint = {},
   tsserver = {
@@ -730,6 +775,9 @@ local servers = {
         description = "Organize Imports"
       }
     }
+  },
+  html = {
+    filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'svelte' },
   },
   intelephense = {},
   tailwindcss = {},

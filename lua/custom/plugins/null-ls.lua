@@ -6,7 +6,7 @@ return {
     null_ls.setup({
       sources = {
         null_ls.builtins.formatting.prettierd.with({
-          extra_filetypes = { 'svelte' },
+          extra_filetypes = { 'svelte', 'blade' },
         }),
         null_ls.builtins.formatting.eslint_d,
 
