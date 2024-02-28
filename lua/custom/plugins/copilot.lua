@@ -1,15 +1,15 @@
 return {
-  "zbirenbaum/copilot.lua",
+  'zbirenbaum/copilot.lua',
+  event = 'InsertEnter',
   config = function()
-    require('copilot').setup({
+    require('copilot').setup {
       suggestion = {
         auto_trigger = true,
         keymap = {
-          accept = "<Tab>",
-          next = "‘",
-          prev = "“",
-        }
-      }
-    })
-  end
+          accept = '<C-CR>',
+          accept_word = '<S-CR>',
+        },
+      },
+    }
+  end,
 }

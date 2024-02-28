@@ -3,7 +3,9 @@ local M = {}
 function M.buffers(opts)
 	opts = opts or {
 		cwd_only = true,
-		follow = true
+		follow = true,
+		sort_mru = true,
+		ignore_current_buffer = true,
 	}
 	require('telescope.builtin').buffers(opts)
 end
