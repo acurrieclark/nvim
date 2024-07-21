@@ -6,11 +6,13 @@ return {
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
-
+    -- Provide JSON schemas for LSPs
+    'b0o/schemastore.nvim',
     -- Additional lua configuration, makes nvim stuff amazing!
     'folke/neodev.nvim',
   },
   config = function()
+    local log = require 'vlog'
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
@@ -54,11 +56,17 @@ return {
 
         -- Rename the variable under your cursor
         --  Most Language Servers support renaming across files, etc.
-        map('<leader>R', vim.lsp.buf.rename, 'Rename')
+        map('<leader>lR', vim.lsp.buf.rename, 'Rename')
 
         -- Execute a code action, usually your cursor needs to be on top of an error
         -- or a suggestion from your LSP for this to activate.
         map('<c-cr>', vim.lsp.buf.code_action, 'Code Action')
+
+        map('<leader>lr', ':LspRestart<CR>', 'Restart LSP Server')
+
+        map('<leader>lf', function()
+          vim.lsp.buf.format()
+        end, 'Format current buffer with LSP')
 
         -- The following two autocommands are used to highlight references of the
         -- word under your cursor when your cursor rests there for a little while.
@@ -79,12 +87,6 @@ return {
           })
         end
 
-        map('<leader>F', function()
-          vim.lsp.buf.format()
-        end, 'Format current buffer with LSP')
-
-        local svelte_hack_group = vim.api.nvim_create_augroup('svelte_ondidchangetsorjsfile', { clear = true })
-
         -- HACK: to make Svelte files work with LSP when updates are made to project ts files
         if client.name == 'svelte' then
           vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI', 'TextChangedP' }, {
@@ -97,7 +99,7 @@ return {
                 },
               })
             end,
-            group = svelte_hack_group,
+            group = vim.api.nvim_create_augroup('svelte_ondidchangetsorjsfile', { clear = true }),
           })
         end
       end,
@@ -118,7 +120,14 @@ return {
     end
 
     local function organize_imports()
-      vim.lsp.buf.code_action { context = { only = { 'source.organizeImports' } }, apply = true }
+      vim.lsp.buf.code_action {
+        context = { only = { 'source.organizeImports' } },
+        apply = true,
+        filter = function(action)
+          log.debug(action.kind)
+          return action.title == 'Organize Imports'
+        end,
+      }
     end
     --  Add any additional override configuration in the following tables. Available keys are:
     --  - cmd (table): Override the default command used to start the server
@@ -168,16 +177,61 @@ return {
           },
         },
       },
+      jsonls = {
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+          },
+        },
+      },
       html = {
         filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'svelte' },
       },
-      intelephense = {
+      rust_analyzer = {},
+      phpactor = {
+        filetypes = { 'php', 'blade' },
         commands = {
           OrganizeImports = {
             organize_imports,
             description = 'Organize Imports',
           },
         },
+        on_attach = function(client)
+          client.server_capabilities.completionProvider = false
+          client.server_capabilities.hoverProvider = false
+          client.server_capabilities.implementationProvider = false
+          client.server_capabilities.referencesProvider = false
+          client.server_capabilities.renameProvider = false
+          client.server_capabilities.selectionRangeProvider = false
+          client.server_capabilities.signatureHelpProvider = false
+          client.server_capabilities.typeDefinitionProvider = false
+          client.server_capabilities.workspaceSymbolProvider = false
+          client.server_capabilities.definitionProvider = false
+          client.server_capabilities.documentHighlightProvider = false
+          client.server_capabilities.documentSymbolProvider = false
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end,
+        init_options = {
+          ['language_server_phpstan.enabled'] = false,
+          ['language_server_psalm.enabled'] = false,
+        },
+        handlers = {
+          ['textDocument/publishDiagnostics'] = function() end,
+        },
+      },
+      intelephense = {
+        commands = {
+          IntelephenseIndex = {
+            function()
+              vim.lsp.buf.execute_command { command = 'intelephense.index.workspace' }
+            end,
+          },
+        },
+        on_attach = function(client)
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end,
       },
       tailwindcss = {},
       lua_ls = {
@@ -232,6 +286,7 @@ return {
             root_dir = server.root_dir,
             filetypes = server.filetypes,
             commands = server.commands,
+            on_attach = server.on_attach or function() end,
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)

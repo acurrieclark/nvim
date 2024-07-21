@@ -8,14 +8,24 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- If a buffer is readonly enable close with q and esc
+vim.api.nvim_create_autocmd('BufEnter', {
+  callback = function(event)
+    if vim.bo[event.buf].readonly or not vim.api.nvim_buf_get_option(event.buf, 'modifiable') then
+      vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>q!<cr>', { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(0, 'n', '<esc>', '<cmd>q!<cr>', { noremap = true, silent = true })
+    end
+  end,
+  group = vim.api.nvim_create_augroup('ReadOnlyClose', { clear = true }),
+})
+
 -- Don't continue comments with o and O
-local custom_o_formatting = vim.api.nvim_create_augroup('CustomOFormatting', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
   pattern = '*',
   callback = function()
     vim.opt.formatoptions:remove { 'o' }
   end,
-  group = custom_o_formatting,
+  group = vim.api.nvim_create_augroup('CustomOFormatting', { clear = true }),
 })
 
 -- Save all buffers when leaving nvim

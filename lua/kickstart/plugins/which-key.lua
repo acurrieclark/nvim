@@ -1,53 +1,33 @@
 -- Useful plugin to show you pending keybinds.
 return {
   'folke/which-key.nvim',
+  event = 'VeryLazy',
   config = function()
-    require('which-key').register({
-      s = {
-        [[<cmd>lua require("persistence").load()<cr>]],
-        'Load Directory Session',
-      },
-      z = {
-        '<cmd>NoNeckPain<cr>',
-        'Zen Mode',
-      },
-      o = {
-        '<cmd>OrganizeImports<cr>',
-        'Organize Imports',
-      },
-      e = {
-        name = 'Explorer',
-        e = { '<cmd>Neotree current reveal<cr>', 'Open at Current File' },
-        g = { '<cmd>Neotree git_status<cr>', 'Git Status' },
-        b = { '<cmd>Neotree buffers<cr>', 'Buffers' },
-        d = { '<cmd>Neotree document_symbols<cr>', 'Document Symbols' },
-      },
-      g = {
-        name = 'Git',
-      },
-      f = {
-        name = 'Find',
-      },
-      d = {
-        name = 'Document',
-      },
-      C = {
-        '<cmd>bufdo :Bdelete<cr>',
-        'Close All Buffers',
-      },
-      c = {
-        '<cmd>Bdelete<cr>',
-        'Close Buffer',
-      },
-      w = {
-        name = '[W]orkspace',
-      },
-      T = { name = '[T]oggle', _ = 'which_key_ignore' },
-      t = { name = 'Tests' },
-    }, { prefix = '<leader>' })
+    require('which-key').setup()
 
-    require('which-key').register({
-      ['<leader>'] = { name = 'VISUAL <leader>' },
-    }, { mode = 'v' })
+    require('which-key').add {
+      { '<leader>C', '<cmd>bufdo :Bdelete<cr>', desc = 'Close All Buffers' },
+      { '<leader>T', group = '[T]oggle' },
+      { '<leader>T_', hidden = true },
+      { '<leader>b', group = 'Buffer' },
+      { '<leader>c', '<cmd>Bdelete<cr>', desc = 'Close Buffer' },
+      { '<leader>d', group = 'Document' },
+      { '<leader>e', group = 'Explorer' },
+      { '<leader>eb', '<cmd>Neotree buffers<cr>', desc = 'Buffers' },
+      { '<leader>ed', '<cmd>Neotree document_symbols<cr>', desc = 'Document Symbols' },
+      { '<leader>ee', '<cmd>Neotree current reveal<cr>', desc = 'Open at Current File' },
+      { '<leader>eg', '<cmd>Neotree git_status<cr>', desc = 'Git Status' },
+      { '<leader>f', group = 'Find' },
+      { '<leader>g', group = 'Git' },
+      { '<leader>l', group = 'LSP' },
+      { '<leader>n', group = 'NPM Dependencies' },
+      { '<leader>o', '<cmd>OrganizeImports<cr>', desc = 'Organize Imports' },
+      { '<leader>p', group = 'PHP' },
+      { '<leader>s', '<cmd>lua require("persistence").load()<cr>', desc = 'Load Directory Session' },
+      { '<leader>t', group = 'Tests' },
+      { '<leader>w', group = '[W]orkspace' },
+      { '<leader>z', '<cmd>NoNeckPain<cr>', desc = 'Zen Mode' },
+    }
+
   end,
 }
