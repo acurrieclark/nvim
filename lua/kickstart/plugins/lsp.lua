@@ -165,7 +165,7 @@ return {
         filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'sass', 'scss', 'html', 'css', 'svelte' },
       },
       eslint = {},
-      tsserver = {
+      ts_ls = {
         filetypes = { 'javascript', 'typescript' },
         root_dir = function(fname)
           return util.root_pattern '.git'(fname) or util.root_pattern 'tsconfig.json'(fname) or util.root_pattern('package.json', 'jsconfig.json')(fname)
@@ -187,6 +187,7 @@ return {
       html = {
         filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'svelte' },
       },
+      nil_ls = {},
       rust_analyzer = {},
       phpactor = {
         filetypes = { 'php', 'blade' },
