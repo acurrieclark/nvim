@@ -1,13 +1,13 @@
 -- Function to check if a directory exists
 local function is_directory(path)
-  local stat = vim.loop.fs_stat(path)
+  local stat = vim.uv.fs_stat(path)
   return stat and stat.type == "directory"
 end
 
 local function find_tests_directory(filename)
   local current_directory = vim.fn.fnamemodify(filename, ":p:h") -- Get the directory of the given filename
 
-  while current_directory ~= vim.loop.cwd() do                   -- Stop when reaching the root directory
+  while current_directory ~= vim.uv.cwd() do                   -- Stop when reaching the root directory
     local tests_directory = current_directory .. '/tests'
     if is_directory(tests_directory) then
       return current_directory
@@ -17,7 +17,7 @@ local function find_tests_directory(filename)
     current_directory = vim.fn.fnamemodify(current_directory, ':h')
   end
 
-  return vim.loop.cwd() -- No "tests" directory found
+  return vim.uv.cwd() -- No "tests" directory found
 end
 
 return {
@@ -80,7 +80,7 @@ return {
   keys = {
     { "<leader>tT", function() require("neotest").run.run(vim.fn.expand("%")) end,                       desc = "Run File" },
     { "<leader>tt", function() require("neotest").run.run(find_tests_directory(vim.fn.expand("%"))) end, desc = "Run Nearest Test Files" },
-    { "<leader>ta", function() require("neotest").run.run(vim.loop.cwd()) end,                           desc = "Run All Test Files" },
+    { "<leader>ta", function() require("neotest").run.run(vim.uv.cwd()) end,                           desc = "Run All Test Files" },
     { "<leader>tr", function() require("neotest").run.run() end,                                         desc = "Run Nearest" },
     { "<leader>ts", function() require("neotest").summary.toggle() end,                                  desc = "Toggle Summary" },
     { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end,  desc = "Show Output" },

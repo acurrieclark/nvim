@@ -3,7 +3,8 @@ local disable_filetypes = { c = true, cpp = true }
 -- Autoformat
 return {
   'stevearc/conform.nvim',
-  lazy = false,
+  event = { 'BufWritePre' },
+  cmd = { 'ConformInfo' },
   keys = {
     {
       '<leader>F',
@@ -25,16 +26,14 @@ return {
       }
     end,
 
+    -- You can use 'stop_after_first' to run the first available formatter from the list
     formatters_by_ft = {
       lua = { 'stylua' },
       php = { 'php-cs-fixer' },
-      blade = { 'blade-formatter', 'php-cs-fixer' },
-      --
-      -- You can use a sub-list to tell conform to run *until* a formatter
-      -- is found.
-      javascript = { { 'prettierd', 'prettier' } },
-      typescript = { { 'prettierd', 'prettier' } },
-      svelte = { { 'prettierd', 'prettier' } },
+      blade = { 'blade-formatter', 'php-cs-fixer', stop_after_first = true },
+      javascript = { 'prettierd', 'prettier', stop_after_first = true },
+      typescript = { 'prettierd', 'prettier', stop_after_first = true },
+      svelte = { 'prettierd', 'prettier', stop_after_first = true },
     },
   },
 }
