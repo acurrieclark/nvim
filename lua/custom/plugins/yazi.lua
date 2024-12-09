@@ -4,7 +4,7 @@ return {
   dependencies = {
     'nvim-lua/plenary.nvim',
   },
-  event = 'VeryLazy',
+  event = 'VimEnter',
   keys = {
     -- 👇 in this section, choose your own keymappings!
     {

@@ -1,5 +1,5 @@
 return {
   "folke/flash.nvim",
-  event = "VeryLazy",
+  event = "VimEnter",
   opts = {}
 }
