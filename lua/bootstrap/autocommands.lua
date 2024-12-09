@@ -12,8 +12,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.api.nvim_create_autocmd('BufEnter', {
   callback = function(event)
     if vim.bo[event.buf].readonly or not vim.api.nvim_buf_get_option(event.buf, 'modifiable') then
-      vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>q!<cr>', { noremap = true, silent = true })
-      vim.api.nvim_buf_set_keymap(0, 'n', '<esc>', '<cmd>q!<cr>', { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>Bdelete<cr>', { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(0, 'n', '<esc>', '<cmd>Bdelete<cr>', { noremap = true, silent = true })
     end
   end,
   group = vim.api.nvim_create_augroup('ReadOnlyClose', { clear = true }),
@@ -23,7 +23,7 @@ vim.api.nvim_create_autocmd('BufEnter', {
 vim.api.nvim_create_autocmd('FileType', {
   pattern = '*',
   callback = function()
-    vim.opt.formatoptions:remove { 'o' }
+    vim.opt.formatoptions:remove 'o'
   end,
   group = vim.api.nvim_create_augroup('CustomOFormatting', { clear = true }),
 })
