@@ -79,10 +79,11 @@ return {
 
           map('<leader>lr', ':LspRestart<CR>', 'Restart LSP Server')
 
-          map('<leader>lf', function() end, 'Format current buffer with LSP')
-          vim.lsp.buf.format()
+          map('<leader>lf', function()
+            vim.lsp.buf.format()
+          end, 'Format current buffer with LSP')
 
-          -- The following two autocommands are used to highlight references of the
+          -- The following autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
           --
@@ -102,15 +103,15 @@ return {
               group = highlight_augroup,
               callback = vim.lsp.buf.clear_references,
             })
-          end
 
-          vim.api.nvim_create_autocmd('LspDetach', {
-            group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-            callback = function(ev)
-              vim.lsp.buf.clear_references()
-              vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = ev.buf }
-            end,
-          })
+            vim.api.nvim_create_autocmd('LspDetach', {
+              group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
+              callback = function(ev)
+                vim.lsp.buf.clear_references()
+                vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = ev.buf }
+              end,
+            })
+          end
 
           -- The following autocommand is used to enable inlay hints in your
           -- code, if the language server you are using supports them

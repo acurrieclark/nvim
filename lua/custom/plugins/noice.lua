@@ -1,30 +1,31 @@
 return {
-  "folke/noice.nvim",
-  event = "VimEnter",
-  -- TODO: Hide Info level messages?
-  -- notify = {},
+  'folke/noice.nvim',
+  event = 'VimEnter',
+  dependencies = {
+    'MunifTanjim/nui.nvim',
+  },
   opts = {
     messages = {
-      view_search = false
+      view_search = false,
     },
     lsp = {
       override = {
-        ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
-        ["vim.lsp.util.stylize_markdown"] = true,
-        ["cmp.entry.get_documentation"] = true,
+        ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+        ['vim.lsp.util.stylize_markdown'] = true,
+        ['cmp.entry.get_documentation'] = true,
       },
     },
     routes = {
       {
         filter = {
-          event = "msg_show",
+          event = 'msg_show',
           any = {
-            { find = "%d+L, %d+B" },
-            { find = "; after #%d+" },
-            { find = "; before #%d+" },
+            { find = '%d+L, %d+B' },
+            { find = '; after #%d+' },
+            { find = '; before #%d+' },
           },
         },
-        view = "mini",
+        view = 'mini',
       },
     },
     presets = {
@@ -35,7 +36,7 @@ return {
     },
     views = {
       mini = {
-        win_options = { winblend = 0 }
+        win_options = { winblend = 0 },
       },
     },
   },
