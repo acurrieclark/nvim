@@ -8,17 +8,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- If a buffer is readonly enable close with q and esc
+-- If a buffer is readonly enable close with q
+-- and enable c-j and c-k to move up and down
 vim.api.nvim_create_autocmd('BufEnter', {
   callback = function(event)
-    if vim.bo[event.buf].readonly or not vim.api.nvim_buf_get_option(event.buf, 'modifiable') then
+    if vim.bo[event.buf].readonly or not vim.api.nvim_get_option_value('modifiable', { buf = event.buf }) then
       vim.api.nvim_buf_set_keymap(0, 'n', '<c-j>', '<Down>', { noremap = true, silent = true })
       vim.api.nvim_buf_set_keymap(0, 'n', '<c-k>', '<Up>', { noremap = true, silent = true })
       vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>Bdelete<cr>', { noremap = true, silent = true })
-      vim.api.nvim_buf_set_keymap(0, 'n', '<esc>', '<cmd>Bdelete<cr>', { noremap = true, silent = true })
     end
   end,
-  group = vim.api.nvim_create_augroup('ReadOnlyClose', { clear = true }),
+  group = vim.api.nvim_create_augroup('ReadOnlyBuffers', { clear = true }),
 })
 
 -- Don't continue comments with o and O

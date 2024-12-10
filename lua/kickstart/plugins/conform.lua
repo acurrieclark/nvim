@@ -1,3 +1,4 @@
+-- filetypes to disable lsp_fallback formatting for
 local disable_filetypes = { c = true, cpp = true }
 
 -- Autoformat
@@ -10,7 +11,13 @@ return {
       '<leader>F',
       function()
         local bufnr = vim.api.nvim_get_current_buf()
-        require('conform').format { async = true, lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype] }
+        local lsp_format_opt
+        if disable_filetypes[vim.bo[bufnr].filetype] then
+          lsp_format_opt = 'never'
+        else
+          lsp_format_opt = 'fallback'
+        end
+        require('conform').format { async = true, lsp_format = lsp_format_opt }
       end,
       mode = '',
       desc = '[F]ormat buffer',
@@ -19,10 +26,15 @@ return {
   opts = {
     notify_on_error = false,
     format_on_save = function(bufnr)
-      -- filetypes to disable lsp_fallback formatting for
+      local lsp_format_opt
+      if disable_filetypes[vim.bo[bufnr].filetype] then
+        lsp_format_opt = 'never'
+      else
+        lsp_format_opt = 'fallback'
+      end
       return {
         timeout_ms = 500,
-        lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+        lsp_format = lsp_format_opt,
       }
     end,
 

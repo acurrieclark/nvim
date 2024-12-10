@@ -2,10 +2,8 @@
 return {
   'folke/which-key.nvim',
   event = 'VimEnter',
-  config = function()
-    require('which-key').setup()
-
-    require('which-key').add {
+  opts = {
+    spec = {
       { '<leader>C', '<cmd>bufdo :Bdelete<cr>', desc = 'Close All Buffers' },
       { '<leader>T', group = '[T]oggle' },
       { '<leader>T_', hidden = true },
@@ -15,7 +13,7 @@ return {
       { '<leader>e', group = 'Explorer' },
       { '<leader>eb', '<cmd>Neotree buffers<cr>', desc = 'Buffers' },
       { '<leader>ed', '<cmd>Neotree document_symbols<cr>', desc = 'Document Symbols' },
-      { '<leader>ee', '<cmd>Neotree current reveal<cr>', desc = 'Open at Current File' },
+      { '<leader>ee', '<cmd>Neotree current reveal<cr>', desc = 'Open at Current File', silent = true },
       { '<leader>eg', '<cmd>Neotree git_status<cr>', desc = 'Git Status' },
       { '<leader>f', group = 'Find' },
       { '<leader>g', group = 'Git' },
@@ -27,7 +25,6 @@ return {
       { '<leader>t', group = 'Tests' },
       { '<leader>w', group = '[W]orkspace' },
       { '<leader>z', '<cmd>NoNeckPain<cr>', desc = 'Zen Mode' },
-    }
-
-  end,
+    },
+  },
 }

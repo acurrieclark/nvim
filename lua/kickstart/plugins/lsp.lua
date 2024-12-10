@@ -38,8 +38,9 @@ return {
           --
           -- In this case, we create a function that lets us more easily define mappings specific
           -- for LSP related items. It sets the mode, buffer and description for us each time.
-          local map = function(keys, func, desc)
-            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+          local map = function(keys, func, desc, mode)
+            mode = mode or 'n'
+            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
           local builtin = require 'telescope.builtin'
@@ -74,13 +75,12 @@ return {
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<c-cr>', vim.lsp.buf.code_action, 'Code Action')
+          map('<c-cr>', vim.lsp.buf.code_action, 'Code Action', { 'n', 'x' })
 
           map('<leader>lr', ':LspRestart<CR>', 'Restart LSP Server')
 
-          map('<leader>lf', function()
-            vim.lsp.buf.format()
-          end, 'Format current buffer with LSP')
+          map('<leader>lf', function() end, 'Format current buffer with LSP')
+          vim.lsp.buf.format()
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -121,7 +121,7 @@ return {
           end
 
           -- HACK: to make Svelte files work with LSP when updates are made to project ts files
-          if client.name == 'svelte' then
+          if client and client.name == 'svelte' then
             vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI', 'TextChangedP' }, {
               pattern = { '*.js', '*.ts' },
               callback = function(ctx)
