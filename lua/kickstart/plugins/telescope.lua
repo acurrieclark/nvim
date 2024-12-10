@@ -21,6 +21,22 @@ return {
   config = function()
     -- [[ Configure Telescope ]]
     -- See `:help telescope` and `:help telescope.setup()`
+
+    local colors = require('catppuccin.palettes').get_palette()
+    local TelescopeColor = {
+      TelescopeMatching = { fg = colors.flamingo },
+      TelescopeSelection = { fg = colors.text, bg = colors.surface0, bold = true },
+      TelescopeSelectionCaret = { fg = colors.text, bg = colors.surface0, bold = true },
+      TelescopePromptPrefix = { fg = colors.pink },
+      TelescopePromptTitle = { bg = colors.pink, fg = colors.mantle },
+      TelescopeResultsTitle = { fg = colors.mantle, bg = colors.teal },
+      TelescopePreviewTitle = { bg = colors.green, fg = colors.mantle },
+    }
+
+    for hl, col in pairs(TelescopeColor) do
+      vim.api.nvim_set_hl(0, hl, col)
+    end
+
     require('telescope').setup {
       extensions = {
         ['ui-select'] = {
@@ -62,6 +78,9 @@ return {
             ['<Esc>'] = require('telescope.actions').close, -- close telescope
           },
         },
+        prompt_prefix = '󱁴 ',
+
+        selection_caret = ' ',
       },
       pickers = {
         lsp_references = {
