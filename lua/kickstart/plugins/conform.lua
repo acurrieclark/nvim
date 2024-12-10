@@ -40,6 +40,8 @@ return {
 
     -- You can use 'stop_after_first' to run the first available formatter from the list
     formatters_by_ft = {
+      nix = { 'alejandra' },
+      python = { 'ruff' },
       lua = { 'stylua' },
       php = { 'php-cs-fixer' },
       blade = { 'blade-formatter', 'php-cs-fixer', stop_after_first = true },

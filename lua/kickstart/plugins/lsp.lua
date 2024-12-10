@@ -199,6 +199,29 @@ return {
           filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'sass', 'scss', 'html', 'css', 'svelte' },
         },
         eslint = {},
+        ruff = {
+          on_attach = function(client)
+            if client.name == 'ruff' then
+              -- Disable hover in favor of Pyright
+              client.server_capabilities.hoverProvider = false
+            end
+          end,
+        },
+        pyright = {
+          settings = {
+            pyright = {
+              autoImportCompletion = true,
+              -- Using Ruff's import organizer
+              disableOrganizeImports = true,
+            },
+            python = {
+              analysis = {
+                -- Ignore all files for analysis to exclusively use Ruff for linting
+                ignore = { '*' },
+              },
+            },
+          },
+        },
         ts_ls = {
           filetypes = { 'javascript', 'typescript' },
           root_dir = function(fname)
