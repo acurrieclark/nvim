@@ -4,6 +4,8 @@ return {
   event = 'VimEnter',
   opts = {
     spec = {
+      { '<leader>x', '<cmd>source %<cr>', desc = 'Source File', mode = 'n' },
+      { '<leader>x', ':lua<cr>', desc = 'Execute Selection', mode = 'v' },
       { '<leader>C', '<cmd>bufdo :Bdelete<cr>', desc = 'Close All Buffers' },
       { '<leader>T', group = '[T]oggle' },
       { '<leader>T_', hidden = true },
