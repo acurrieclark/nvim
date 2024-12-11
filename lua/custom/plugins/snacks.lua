@@ -9,6 +9,7 @@ return {
     notifier = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = true },
+    bufdelete = { enabled = true },
   },
   keys = {
     {
