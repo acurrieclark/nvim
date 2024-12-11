@@ -60,6 +60,7 @@ return {
             preview = { '─', '│', '─', '│', '╭', '╮', '╯', '╰' },
           },
         },
+        fzf = {},
       },
       defaults = {
         path_display = { 'smart' },
