@@ -54,17 +54,13 @@ vim.api.nvim_create_autocmd('VimEnter', {
   group = find_files_hijack_netrw,
   pattern = '*',
   callback = function()
-    vim.schedule(function()
-      -- Early return if netrw or not a directory
-      if vim.bo[0].filetype == 'netrw' or vim.fn.isdirectory(vim.fn.expand '%:p') == 0 then
-        return
-      end
+    if vim.bo[0].filetype == 'netrw' or vim.fn.isdirectory(vim.fn.expand '%:p') == 0 then
+      return
+    end
 
-      vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = 0 })
-
-      require('telescope.builtin').find_files {
-        cwd = vim.fn.expand '%:p:h',
-      }
-    end)
+    vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = 0 })
+    require('telescope').extensions.smart_open.smart_open {
+      cwd_only = true,
+    }
   end,
 })

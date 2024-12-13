@@ -39,6 +39,10 @@ return {
 
     require('telescope').setup {
       extensions = {
+        smart_open = {
+          match_algorithm = 'fzf',
+          result_limit = 100,
+        },
         ['ui-select'] = {
           layout_strategy = 'center',
           sorting_strategy = 'ascending',
@@ -93,6 +97,7 @@ return {
     -- Enable telescope fzf native, if installed
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
+    pcall(require('telescope').load_extension 'smart_open')
 
     local telescope_functions = require 'telescope.functions'
     local builtin = require 'telescope.builtin'
