@@ -30,6 +30,10 @@ return {
         'markdown_inline',
         'markdown',
         'query',
+        'blade',
+        'php',
+        'json',
+        'php_only',
       },
 
       -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)

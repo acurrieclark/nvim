@@ -15,7 +15,10 @@ vim.api.nvim_create_autocmd('BufEnter', {
     if vim.bo[event.buf].readonly or not vim.api.nvim_get_option_value('modifiable', { buf = event.buf }) then
       vim.api.nvim_buf_set_keymap(0, 'n', '<c-j>', '<Down>', { noremap = true, silent = true })
       vim.api.nvim_buf_set_keymap(0, 'n', '<c-k>', '<Up>', { noremap = true, silent = true })
-      vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>q!<cr>', { noremap = true, silent = true })
+      -- some buffers already have a q mapping
+      if vim.o.filetype ~= 'neo-tree' then
+        vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>q!<cr>', { noremap = true, silent = true })
+      end
     end
   end,
   group = vim.api.nvim_create_augroup('ReadOnlyBuffers', { clear = true }),

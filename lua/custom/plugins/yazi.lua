@@ -9,9 +9,7 @@ return {
     -- 👇 in this section, choose your own keymappings!
     {
       '\\',
-      function()
-        require('yazi').yazi(nil, vim.fn.getcwd())
-      end,
+      '<cmd>Yazi<cr>',
       desc = "Open the file manager in nvim's working directory",
     },
   },
