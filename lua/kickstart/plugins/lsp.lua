@@ -207,6 +207,7 @@ return {
             end
           end,
         },
+        gopls = {},
         pyright = {
           settings = {
             pyright = {
