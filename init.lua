@@ -6,6 +6,7 @@ vim.g.maplocalleader = ' '
 require 'bootstrap.options'
 require 'bootstrap.keymaps'
 require 'bootstrap.autocommands'
+require 'bootstrap.diagnostics'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
@@ -17,8 +18,11 @@ if not vim.uv.fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     error('Error cloning lazy.nvim:\n' .. out)
   end
-end ---@diagnostic disable-next-line: undefined-field
-vim.opt.rtp:prepend(lazypath)
+end
+
+---@type vim.Option
+local rtp = vim.opt.rtp
+rtp:prepend(lazypath)
 
 -- [[ Configure plugins ]]
 --
@@ -29,7 +33,7 @@ require('lazy').setup({
   'tjdevries/vlog.nvim',
 
   -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
+  'NMAC427/guess-indent.nvim',
 
   -- import Kickstart Plugins
   require 'kickstart.plugins.comment',

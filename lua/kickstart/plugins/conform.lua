@@ -11,13 +11,15 @@ return {
       '<leader>F',
       function()
         local bufnr = vim.api.nvim_get_current_buf()
-        local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
+          return nil
         else
-          lsp_format_opt = 'fallback'
+          return {
+            async = true,
+            timeout_ms = 500,
+            lsp_format = 'fallback',
+          }
         end
-        require('conform').format { async = true, lsp_format = lsp_format_opt }
       end,
       mode = '',
       desc = '[F]ormat buffer',
