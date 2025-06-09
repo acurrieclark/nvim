@@ -20,6 +20,7 @@ return {
         filter = {
           event = 'msg_show',
           any = {
+            { find = 'No information available' },
             { find = '%d+L, %d+B' },
             { find = '; after #%d+' },
             { find = '; before #%d+' },

@@ -33,7 +33,7 @@ require('lazy').setup({
   'tjdevries/vlog.nvim',
 
   -- Detect tabstop and shiftwidth automatically
-  'NMAC427/guess-indent.nvim',
+  { 'NMAC427/guess-indent.nvim', opts = {} },
 
   -- import Kickstart Plugins
   require 'kickstart.plugins.comment',
