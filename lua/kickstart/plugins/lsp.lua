@@ -180,14 +180,13 @@ return {
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      ---@type table<string, vim.lsp.Config>
       local servers = {
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
 
         svelte = {
-          root_dir = function(fname)
-            return util.root_pattern 'svelte.config.js'(fname) or util.root_pattern('package.json', 'tsconfig.json')(fname)
-          end,
+          root_markers = { 'svelte.config.js', 'package.json', 'tsconfig.json' },
           commands = {
             OrganizeImports = {
               organize_imports,
@@ -197,9 +196,7 @@ return {
         },
         angularls = {},
         denols = {
-          root_dir = function(fname)
-            return util.root_pattern('deno.json', 'deno.jsonc')(fname)
-          end,
+          root_markers = { 'deno.json', 'deno.jsonc', 'deno.lock' },
           commands = {
             OrganizeImports = {
               organize_imports,
@@ -237,9 +234,8 @@ return {
         },
         ts_ls = {
           filetypes = { 'javascript', 'typescript' },
-          root_dir = function(fname)
-            return util.root_pattern '.git'(fname) or util.root_pattern 'tsconfig.json'(fname) or util.root_pattern('package.json', 'jsconfig.json')(fname)
-          end,
+
+          root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
           commands = {
             OrganizeImports = {
               organize_imports_ts,
@@ -301,17 +297,30 @@ return {
         'php-cs-fixer', -- Used to format php files
         'stylua', -- Used to format lua code
       })
+
+      for server, config in pairs(servers) do
+        if not vim.tbl_isempty(config) then
+          config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
+
+          vim.lsp.config(server, config)
+        end
+      end
+
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-
-            require('lspconfig')[server_name].setup(server)
-          end,
+        -- ensure_installed = ensure_installed,
+        automatic_enable = {
+          exclude = { 'denols' },
         },
+        -- handlers = {
+        --   function(server_name)
+        --     local server = servers[server_name] or {}
+        --     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        --
+        --     require('lspconfig')[server_name].setup(server)
+        --   end,
+        -- },
       }
     end,
   },
