@@ -17,7 +17,7 @@ return {
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for neovim
       { 'mason-org/mason.nvim', opts = {} }, -- NOTE: Must be loaded before dependants
-      'mason-org/mason-lspconfig.nvim',
+      { 'mason-org/mason-lspconfig.nvim' },
       'WhoIsSethDaniel/mason-tool-installer.nvim',
 
       -- Provide JSON schemas for LSPs
@@ -89,7 +89,7 @@ return {
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -114,7 +114,7 @@ return {
 
           -- The following autocommand is used to enable inlay hints in your
           -- code, if the language server you are using supports them
-          if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
             map('<leader>Th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -181,7 +181,9 @@ return {
             },
           },
         },
-        angularls = {},
+        angularls = {
+          root_markers = { 'angular.json', 'project.json' },
+        },
         denols = {
           root_markers = { 'deno.json', 'deno.jsonc', 'deno.lock' },
           commands = {
@@ -221,7 +223,6 @@ return {
         },
         ts_ls = {
           filetypes = { 'javascript', 'typescript' },
-
           root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
           commands = {
             OrganizeImports = {
@@ -252,6 +253,8 @@ return {
           },
         },
         tailwindcss = {},
+        -- laravel_ls cannot be installed currently as OS X is not supported
+        -- laravel_ls = {},
         lua_ls = {
           settings = {
             Lua = {
@@ -285,30 +288,29 @@ return {
         'stylua', -- Used to format lua code
       })
 
-      for server, config in pairs(servers) do
-        if not vim.tbl_isempty(config) then
-          config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
-
-          vim.lsp.config(server, config)
-        end
-      end
-
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        -- ensure_installed = ensure_installed,
-        automatic_enable = {
-          exclude = { 'denols' },
-        },
-        -- handlers = {
-        --   function(server_name)
-        --     local server = servers[server_name] or {}
-        --     server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-        --
-        --     require('lspconfig')[server_name].setup(server)
-        --   end,
-        -- },
+        ensure_installed = {},
+        automatic_enable = false,
       }
+
+      for server, config in pairs(servers) do
+        config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, config.capabilities or {})
+        vim.lsp.config(server, config)
+
+        -- if the server is deno_ls and the project root doesn't contain a deno.json file
+        if server == 'denols' and not util.root_pattern('deno.json', 'deno.jsonc', 'deno.lock')() then
+          goto continue
+        end
+
+        if server == 'ts_ls' and not util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json')() then
+          goto continue
+        end
+
+        vim.lsp.enable(server)
+        ::continue::
+      end
     end,
   },
 }

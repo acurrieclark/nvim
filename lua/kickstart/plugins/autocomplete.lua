@@ -58,10 +58,15 @@ return {
     -- Default list of enabled providers defined so that you can extend it
     -- elsewhere in your config, without redefining it, due to `opts_extend`
     sources = {
-      default = { 'lsp', 'path', 'snippets', 'buffer', 'lazydev' },
+      default = { 'laravel', 'lsp', 'path', 'snippets', 'buffer', 'lazydev' },
       min_keyword_length = 1,
       providers = {
         lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+        laravel = {
+          name = 'laravel',
+          module = 'laravel.blink_source',
+          score_offset = 1000, -- High priority for Laravel completions
+        },
       },
     },
 
