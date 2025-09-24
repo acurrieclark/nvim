@@ -221,6 +221,16 @@ return {
             },
           },
         },
+        cssls = {
+          --   filetypes = { 'css', 'scss', 'sass', 'less', 'html', 'blade.php', 'blade', 'antlers.php', 'antlers.html', 'antlers', 'vue', 'svelte' },
+          settings = {
+            css = {
+              lint = {
+                unknownAtRules = 'ignore',
+              },
+            },
+          },
+        },
         ts_ls = {
           filetypes = { 'javascript', 'typescript' },
           root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
