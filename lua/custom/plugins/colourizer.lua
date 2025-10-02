@@ -1,8 +1,10 @@
 return {
   'catgoose/nvim-colorizer.lua',
   event = 'BufReadPre',
-  opts = { -- set to setup table
-    tailwind = 'both',
-    sass = { enable = false, parsers = { 'css' } },
+  opts = {
+    user_default_options = {
+      tailwind = 'both',
+      sass = { enable = false, parsers = { 'css' } },
+    },
   },
 }

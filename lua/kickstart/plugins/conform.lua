@@ -49,6 +49,7 @@ return {
       blade = { 'blade-formatter', 'php_cs_fixer', stop_after_first = true },
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
       typescript = { 'prettierd', 'prettier', stop_after_first = true },
+      css = { 'prettierd', 'prettier', stop_after_first = true },
       svelte = { 'prettierd', 'prettier', stop_after_first = true },
       go = { 'gofmt' },
     },
