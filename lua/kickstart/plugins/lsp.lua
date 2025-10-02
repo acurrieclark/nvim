@@ -125,7 +125,7 @@ return {
             vim.api.nvim_create_autocmd({ 'TextChanged', 'TextChangedI', 'TextChangedP' }, {
               pattern = { '*.js', '*.ts' },
               callback = function(ctx)
-                client.notify('$/onDidChangeTsOrJsFile', {
+                client.rpc.notify('$/onDidChangeTsOrJsFile', {
                   uri = ctx.file,
                   changes = {
                     { text = table.concat(vim.api.nvim_buf_get_lines(ctx.buf, 0, -1, false), '\n') },
@@ -148,7 +148,7 @@ return {
           arguments = { vim.api.nvim_buf_get_name(0) },
           title = '',
         }
-        vim.lsp.buf.execute_command(params)
+        vim.lsp.buf_request(0, 'workspace/executeCommand', params)
       end
 
       local function organize_imports()
@@ -175,10 +175,7 @@ return {
         svelte = {
           root_markers = { 'svelte.config.js', 'package.json', 'tsconfig.json' },
           commands = {
-            OrganizeImports = {
-              organize_imports,
-              description = 'Organize Imports',
-            },
+            OrganizeImports = organize_imports,
           },
         },
         angularls = {
@@ -187,10 +184,7 @@ return {
         denols = {
           root_markers = { 'deno.json', 'deno.jsonc', 'deno.lock' },
           commands = {
-            OrganizeImports = {
-              organize_imports,
-              description = 'Organize Imports',
-            },
+            OrganizeImports = organize_imports,
           },
         },
         emmet_ls = {
@@ -235,10 +229,7 @@ return {
           filetypes = { 'javascript', 'typescript' },
           root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
           commands = {
-            OrganizeImports = {
-              organize_imports_ts,
-              description = 'Organize Imports',
-            },
+            OrganizeImports = organize_imports_ts,
           },
         },
         jsonls = {
@@ -255,11 +246,9 @@ return {
         rust_analyzer = {},
         intelephense = {
           commands = {
-            IntelephenseIndex = {
-              function()
-                vim.lsp.buf.execute_command { command = 'intelephense.index.workspace' }
-              end,
-            },
+            IntelephenseIndex = function()
+              vim.lsp.buf_request(0, 'workspace/executeCommand', { command = 'intelephense.index.workspace' })
+            end,
           },
         },
         tailwindcss = {},
