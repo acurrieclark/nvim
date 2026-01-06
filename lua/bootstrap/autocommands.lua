@@ -12,7 +12,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- and enable c-j and c-k to move up and down
 vim.api.nvim_create_autocmd('BufEnter', {
   callback = function(event)
-    if vim.bo[event.buf].readonly or not vim.api.nvim_get_option_value('modifiable', { buf = event.buf }) then
+    if vim.bo[event.buf].readonly or not vim.bo[event.buf].modifiable then
       vim.api.nvim_buf_set_keymap(0, 'n', '<c-j>', '<Down>', { noremap = true, silent = true })
       vim.api.nvim_buf_set_keymap(0, 'n', '<c-k>', '<Up>', { noremap = true, silent = true })
       -- some buffers already have a q mapping
@@ -34,12 +34,12 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 -- Save all buffers when leaving nvim
-vim.cmd [[
-  augroup Autosave
-    autocmd!
-    autocmd BufLeave,FocusLost * silent! wall
-  augroup END
-]]
+vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost' }, {
+  group = vim.api.nvim_create_augroup('Autosave', { clear = true }),
+  callback = function()
+    vim.cmd 'silent! wall'
+  end,
+})
 
 -- Open find files instead of netrw
 local find_files_hijack_netrw = vim.api.nvim_create_augroup('find_files_hijack_netrw', { clear = true })
@@ -53,6 +53,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
     pcall(vim.api.nvim_clear_autocmds, { group = 'FileExplorer' })
   end,
 })
+
 vim.api.nvim_create_autocmd('VimEnter', {
   group = find_files_hijack_netrw,
   pattern = '*',
@@ -61,7 +62,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
       return
     end
 
-    vim.api.nvim_set_option_value('bufhidden', 'wipe', { buf = 0 })
+    vim.bo[0].bufhidden = 'wipe'
     require('telescope').extensions.smart_open.smart_open {
       cwd_only = true,
     }

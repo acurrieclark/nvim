@@ -52,9 +52,6 @@ vim.o.inccommand = 'split'
 -- Show which line your cursor is on
 vim.o.cursorline = true
 
--- Enable break indent
-vim.o.breakindent = true
-
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
 
@@ -65,8 +62,6 @@ vim.o.scrolloff = 5
 
 -- Unified statusline
 vim.o.laststatus = 3
-
-vim.o.tagstack = true
 
 -- prompt to save changes before quitting
 vim.o.confirm = true
