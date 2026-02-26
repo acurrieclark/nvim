@@ -227,7 +227,21 @@ return {
         },
         ts_ls = {
           filetypes = { 'javascript', 'typescript' },
-          root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json' },
+          root_dir = function(bufnr, on_dir)
+            local root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'bun.lockb', 'bun.lock' }
+            root_markers = vim.fn.has('nvim-0.11.3') == 1 and { root_markers, { '.git' } } or vim.list_extend(root_markers, { '.git' })
+            -- exclude deno
+            local deno_root = vim.fs.root(bufnr, { 'deno.json', 'deno.jsonc' })
+            local deno_lock_root = vim.fs.root(bufnr, { 'deno.lock' })
+            local project_root = vim.fs.root(bufnr, root_markers)
+            if deno_lock_root and (not project_root or #deno_lock_root > #project_root) then
+              return
+            end
+            if deno_root and (not project_root or #deno_root >= #project_root) then
+              return
+            end
+            on_dir(project_root or vim.fn.getcwd())
+          end,
           commands = {
             OrganizeImports = organize_imports_ts,
           },
@@ -299,11 +313,7 @@ return {
         vim.lsp.config(server, config)
 
         -- if the server is deno_ls and the project root doesn't contain a deno.json file
-        if server == 'denols' and not util.root_pattern('deno.json', 'deno.jsonc', 'deno.lock')() then
-          goto continue
-        end
-
-        if server == 'ts_ls' and not util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json')() then
+        if server == 'denols' and not util.root_pattern('deno.json', 'deno.jsonc', 'deno.lock')(vim.fn.getcwd()) then
           goto continue
         end
 
