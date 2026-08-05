@@ -45,7 +45,7 @@ return {
         command = 'vendor/bin/blade-format',
         args = { '$FILENAME' },
         stdin = false,
-        cwd = function(ctx)
+        cwd = function(self, ctx)
           return vim.fs.root(ctx.filename, { 'composer.json', '.git' })
         end,
       },
