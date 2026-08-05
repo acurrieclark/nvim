@@ -41,13 +41,9 @@ return {
     end,
 
     formatters = {
-      joelstein_blade = {
-        command = 'vendor/bin/blade-format',
-        args = { '$FILENAME' },
-        stdin = false,
-        cwd = function(self, ctx)
-          return vim.fs.root(ctx.filename, { 'composer.json', '.git' })
-        end,
+      pint_blade = {
+        inherit = 'pint',
+        prepend_args = { '--blade' },
       },
     },
 
@@ -56,13 +52,15 @@ return {
       nix = { 'alejandra' },
       python = { 'ruff_format' },
       lua = { 'stylua' },
-      blade = function(bufnr)
-        local bufname = vim.api.nvim_buf_get_name(bufnr)
-        local root = vim.fs.root(bufname, { 'composer.json', '.git' })
-        if root and vim.fn.executable(vim.fs.joinpath(root, 'vendor/bin/blade-format')) == 1 then
-          return { 'joelstein_blade' }
+      blade = { 'pint_blade' },
+      php = function(bufnr)
+        local clients = vim.lsp.get_clients({ bufnr = bufnr })
+        for _, client in ipairs(clients) do
+          if client.supports_method('textDocument/formatting', { bufnr = bufnr }) then
+            return {}
+          end
         end
-        return { 'blade-formatter', 'php_cs_fixer', stop_after_first = true }
+        return { 'pint' }
       end,
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
       typescript = { 'prettierd', 'prettier', stop_after_first = true },

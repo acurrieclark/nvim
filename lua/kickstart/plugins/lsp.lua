@@ -310,9 +310,8 @@ return {
         return not vim.tbl_contains(mason_skip, name)
       end, ensure_installed)
       vim.list_extend(ensure_installed, {
-        'blade-formatter', -- Used to format blade Files
+        'pint', -- Used to format php and blade files
         'prettierd', -- Used to format javascript and typescript files
-        'php-cs-fixer', -- Used to format php files
         'stylua', -- Used to format lua code
       })
 
