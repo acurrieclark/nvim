@@ -45,7 +45,6 @@ return {
       nix = { 'alejandra' },
       python = { 'ruff_format' },
       lua = { 'stylua' },
-      php = { 'php_cs_fixer' },
       blade = { 'blade-formatter', 'php_cs_fixer', stop_after_first = true },
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
       typescript = { 'prettierd', 'prettier', stop_after_first = true },

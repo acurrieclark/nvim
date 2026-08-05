@@ -259,12 +259,17 @@ return {
         },
         nil_ls = {},
         rust_analyzer = {},
-        intelephense = {
-          commands = {
-            IntelephenseIndex = function()
-              vim.lsp.buf_request(0, 'workspace/executeCommand', { command = 'intelephense.index.workspace' })
-            end,
-          },
+        -- intelephense = {
+        --   commands = {
+        --     IntelephenseIndex = function()
+        --       vim.lsp.buf_request(0, 'workspace/executeCommand', { command = 'intelephense.index.workspace' })
+        --     end,
+        --   },
+        -- },
+        phpantom_lsp = {
+          cmd = { 'phpantom_lsp' },
+          filetypes = { 'php' },
+          root_markers = { 'composer.json', '.git' },
         },
         tailwindcss = {},
         laravel_lsp = {
@@ -295,9 +300,15 @@ return {
       -- `mason` had to be setup earlier: to configure its options see the
       -- `dependencies` table for `nvim-lspconfig` above.
 
+      -- Servers that Mason cannot install (e.g., Composer packages)
+      local mason_skip = { 'laravel_lsp' }
+
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
+      ensure_installed = vim.tbl_filter(function(name)
+        return not vim.tbl_contains(mason_skip, name)
+      end, ensure_installed)
       vim.list_extend(ensure_installed, {
         'blade-formatter', -- Used to format blade Files
         'prettierd', -- Used to format javascript and typescript files
