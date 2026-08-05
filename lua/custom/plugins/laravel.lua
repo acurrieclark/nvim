@@ -10,17 +10,17 @@ return {
   },
   cmd = { 'Laravel' },
   keys = {
-    { '<leader>Ll', function() require('laravel').commands.run('laravel') end, desc = 'Laravel: Master picker' },
-    { '<leader>La', function() require('laravel').commands.run('artisan') end, desc = 'Laravel: Artisan' },
-    { '<leader>Lr', function() require('laravel').commands.run('routes') end, desc = 'Laravel: Routes' },
-    { '<leader>Lm', function() require('laravel').commands.run('make') end, desc = 'Laravel: Make' },
-    { '<leader>Lc', function() require('laravel').commands.run('commands') end, desc = 'Laravel: Custom commands' },
-    { '<leader>Lo', function() require('laravel').commands.run('resources') end, desc = 'Laravel: Resources' },
-    { '<leader>Lt', function() require('laravel').commands.run('actions') end, desc = 'Laravel: Code actions' },
-    { '<leader>Lu', function() require('laravel').commands.run('hub') end, desc = 'Laravel: Artisan Hub' },
-    { '<leader>Lp', function() require('laravel').commands.run('command_center') end, desc = 'Laravel: Command Center' },
-    { '<leader>Lh', function() require('laravel').commands.run('docs') end, desc = 'Laravel: Docs' },
-    { '<c-g>', function() require('laravel').commands.run('view:finder') end, desc = 'Laravel: View finder' },
+    { '<leader>Ll', function() Laravel.pickers.laravel() end, desc = 'Laravel: Master picker' },
+    { '<leader>La', function() Laravel.pickers.artisan() end, desc = 'Laravel: Artisan' },
+    { '<leader>Lr', function() Laravel.pickers.routes() end, desc = 'Laravel: Routes' },
+    { '<leader>Lm', function() Laravel.pickers.make() end, desc = 'Laravel: Make' },
+    { '<leader>Lc', function() Laravel.pickers.commands() end, desc = 'Laravel: Custom commands' },
+    { '<leader>Lo', function() Laravel.pickers.resources() end, desc = 'Laravel: Resources' },
+    { '<leader>Lt', function() Laravel.commands.run('actions') end, desc = 'Laravel: Code actions' },
+    { '<leader>Lu', function() Laravel.commands.run('hub') end, desc = 'Laravel: Artisan Hub' },
+    { '<leader>Lp', function() Laravel.commands.run('command_center') end, desc = 'Laravel: Command Center' },
+    { '<leader>Lh', function() Laravel.run('artisan docs') end, desc = 'Laravel: Docs' },
+    { '<c-g>', function() Laravel.commands.run('view:finder') end, desc = 'Laravel: View finder' },
   },
   event = { 'VeryLazy' },
   opts = {
@@ -32,6 +32,5 @@ return {
   },
   config = function(_, opts)
     require('laravel').setup(opts)
-    vim.g.Laravel = require('laravel')
   end,
 }
