@@ -21,19 +21,6 @@ return {
     { '<leader>Lp', function() require('laravel').commands.run('command_center') end, desc = 'Laravel: Command Center' },
     { '<leader>Lh', function() require('laravel').commands.run('docs') end, desc = 'Laravel: Docs' },
     { '<c-g>', function() require('laravel').commands.run('view:finder') end, desc = 'Laravel: View finder' },
-    {
-      'gf',
-      function()
-        local laravel = require('laravel')
-        if laravel.app('gf').cursorOnResource() then
-          return '<cmd>lua require("laravel").commands.run("gf")<cr>'
-        end
-        return 'gf'
-      end,
-      expr = true,
-      noremap = true,
-      desc = 'Laravel: Go to resource',
-    },
   },
   event = { 'VeryLazy' },
   opts = {
