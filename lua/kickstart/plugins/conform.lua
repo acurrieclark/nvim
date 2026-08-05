@@ -45,7 +45,9 @@ return {
         command = 'vendor/bin/blade-format',
         args = { '$FILENAME' },
         stdin = false,
-        cwd = require('conform.util').root_file({ 'composer.json', '.git' }),
+        cwd = function(ctx)
+          return vim.fs.root(ctx.filename, { 'composer.json', '.git' })
+        end,
       },
     },
 
