@@ -40,12 +40,28 @@ return {
       }
     end,
 
+    formatters = {
+      joelstein_blade = {
+        command = 'vendor/bin/blade-format',
+        args = { '$FILENAME' },
+        stdin = false,
+        cwd = require('conform.util').root_file({ 'composer.json', '.git' }),
+      },
+    },
+
     -- You can use 'stop_after_first' to run the first available formatter from the list
     formatters_by_ft = {
       nix = { 'alejandra' },
       python = { 'ruff_format' },
       lua = { 'stylua' },
-      blade = { 'blade-formatter', 'php_cs_fixer', stop_after_first = true },
+      blade = function(bufnr)
+        local bufname = vim.api.nvim_buf_get_name(bufnr)
+        local root = vim.fs.root(bufname, { 'composer.json', '.git' })
+        if root and vim.fn.executable(vim.fs.joinpath(root, 'vendor/bin/blade-format')) == 1 then
+          return { 'joelstein_blade' }
+        end
+        return { 'blade-formatter', 'php_cs_fixer', stop_after_first = true }
+      end,
       javascript = { 'prettierd', 'prettier', stop_after_first = true },
       typescript = { 'prettierd', 'prettier', stop_after_first = true },
       css = { 'prettierd', 'prettier', stop_after_first = true },
