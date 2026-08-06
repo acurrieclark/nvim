@@ -59,6 +59,15 @@ vim.cmd [[
   cnoreabbrev Q! q!
 ]]
 
+-- Command-line: C-j/C-k cycle wildmenu completion or history
+vim.keymap.set('c', '<C-j>', function()
+  return vim.fn.wildmenumode() == 1 and '<Down>' or '<C-n>'
+end, { expr = true })
+
+vim.keymap.set('c', '<C-k>', function()
+  return vim.fn.wildmenumode() == 1 and '<Up>' or '<C-p>'
+end, { expr = true })
+
 -- When joining lines, keep the same cursor position
 vim.keymap.set('n', 'J', 'mzJ`z')
 

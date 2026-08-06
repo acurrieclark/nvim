@@ -66,3 +66,6 @@ vim.o.laststatus = 3
 
 -- prompt to save changes before quitting
 vim.o.confirm = true
+
+-- Enable command-line completion menu
+vim.o.wildmenu = true
