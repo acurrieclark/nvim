@@ -275,7 +275,12 @@ return {
         laravel_lsp = {
           cmd = { 'laravel-lsp' },
           filetypes = { 'php', 'blade' },
-          root_markers = { 'artisan', 'composer.json', '.git' },
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, { 'artisan' })
+            if root then
+              on_dir(root)
+            end
+          end,
         },
         lua_ls = {
           settings = {
