@@ -2,7 +2,10 @@ return {
   -- Highlight, edit, and navigate code
   'nvim-treesitter/nvim-treesitter',
   dependencies = {
-    'nvim-treesitter/nvim-treesitter-textobjects',
+    {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+      branch = 'master',
+    },
     'windwp/nvim-ts-autotag',
   },
   branch = 'master',
@@ -121,5 +124,20 @@ return {
         ['.*%.blade%.php'] = 'blade',
       },
     }
+
+    -- Workaround for Neovim 0.12: disable treesitter in markdown floating windows
+    -- (LSP hover, signature help) to avoid "attempt to call method 'range'" crash.
+    -- Normal markdown files (README.md, etc.) keep full treesitter highlighting.
+    vim.api.nvim_create_autocmd('BufWinEnter', {
+      callback = function(args)
+        if vim.bo[args.buf].filetype == 'markdown' then
+          local win = vim.api.nvim_get_current_win()
+          local cfg = vim.api.nvim_win_get_config(win)
+          if cfg.relative ~= '' then
+            vim.treesitter.stop(args.buf)
+          end
+        end
+      end,
+    })
   end,
 }
