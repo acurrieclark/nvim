@@ -43,6 +43,43 @@ vim.keymap.set('n', ']w', function()
 end, { desc = 'Go to next warning' })
 vim.keymap.set('n', '<leader>di', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 
+-- Restart nvim and restore the current session via tmux
+vim.keymap.set('n', '<leader>R', function()
+  if vim.fn.executable('tmux') == 0 then
+    vim.notify('tmux executable not found', vim.log.levels.WARN)
+    return
+  end
+
+  if not vim.env.TMUX then
+    vim.notify('Restart requires tmux', vim.log.levels.WARN)
+    return
+  end
+
+  vim.cmd('wa')
+
+  -- Save a dedicated session file for the reload, without empty buffers
+  local session_file = vim.fn.stdpath('data') .. '/reload_session.vim'
+  local saved_sessionoptions = vim.o.sessionoptions
+  vim.opt.sessionoptions:remove('blank')
+  vim.cmd('mksession! ' .. vim.fn.fnameescape(session_file))
+  vim.o.sessionoptions = saved_sessionoptions
+  require('persistence').save()
+
+  local pane = vim.env.TMUX_PANE
+  local nvim_cmd = 'nvim -c "source ' .. vim.fn.fnameescape(session_file) .. '"'
+  local script_file = vim.fn.stdpath('data') .. '/reload_polling_' .. pane:gsub('%%', '') .. '.sh'
+  local script = string.format(
+    '#!/bin/sh\nfor i in $(seq 1 50); do\n  cmd=$(tmux display-message -p -t %s "#{pane_current_command}")\n  if [ "$cmd" != "nvim" ]; then\n    sleep 1.0\n    tmux send-keys -t %s %s Enter\n    break\n  fi\n  sleep 0.1\ndone\n',
+    pane,
+    pane,
+    vim.fn.shellescape(nvim_cmd)
+  )
+  vim.fn.writefile(vim.split(script, '\n'), script_file)
+  vim.fn.system { 'chmod', '+x', script_file }
+  vim.fn.jobstart({ 'tmux', 'run-shell', script_file }, { detach = true })
+  vim.cmd('qa!')
+end, { desc = 'Restart nvim and restore session' })
+
 -- Quickly envoke the q macro
 vim.keymap.set('n', 'Q', '@q')
 vim.keymap.set('v', 'Q', ':norm @q<CR>')

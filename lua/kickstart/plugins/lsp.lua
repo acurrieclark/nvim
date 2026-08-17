@@ -76,7 +76,15 @@ return {
           -- or a suggestion from your LSP for this to activate.
           map('<c-cr>', vim.lsp.buf.code_action, 'Code Action', { 'n', 'x' })
 
-          map('<leader>lr', ':LspRestart<CR>', 'Restart LSP Server')
+          vim.keymap.set('n', '<leader>lr', function()
+            local clients = vim.lsp.get_clients { bufnr = 0 }
+
+            for _, client in ipairs(clients) do
+              client:stop(true)
+            end
+
+            vim.cmd 'edit'
+          end, { desc = 'Restart LSP' })
 
           map('<leader>lf', function()
             vim.lsp.buf.format()
