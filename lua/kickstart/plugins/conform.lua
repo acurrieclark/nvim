@@ -54,7 +54,7 @@ return {
       lua = { 'stylua' },
       blade = { 'pint_blade' },
       php = function(bufnr)
-        local clients = vim.lsp.get_clients({ bufnr = bufnr })
+        local clients = vim.lsp.get_clients { bufnr = bufnr }
         for _, client in ipairs(clients) do
           if client.supports_method('textDocument/formatting', { bufnr = bufnr }) then
             return {}
@@ -62,10 +62,13 @@ return {
         end
         return { 'pint' }
       end,
-      javascript = { 'prettierd', 'prettier', stop_after_first = true },
-      typescript = { 'prettierd', 'prettier', stop_after_first = true },
-      css = { 'prettierd', 'prettier', stop_after_first = true },
-      svelte = { 'prettierd', 'prettier', stop_after_first = true },
+      javascript = { 'oxfmt' },
+      typescript = { 'oxfmt' },
+      svelte = { 'oxfmt' },
+      css = { 'oxfmt' },
+      json = { 'oxfmt' },
+      html = { 'oxfmt' },
+      markdown = { 'oxfmt' },
       go = { 'gofmt' },
     },
   },

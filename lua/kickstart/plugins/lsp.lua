@@ -159,6 +159,15 @@ return {
         vim.lsp.buf_request(0, 'workspace/executeCommand', params)
       end
 
+      local function organize_imports_vtsls()
+        local params = {
+          command = 'typescript.organizeImports',
+          arguments = { vim.api.nvim_buf_get_name(0) },
+          title = '',
+        }
+        vim.lsp.buf_request(0, 'workspace/executeCommand', params)
+      end
+
       local function organize_imports()
         vim.lsp.buf.code_action {
           context = { only = { 'source.organizeImports' } },
@@ -198,7 +207,6 @@ return {
         emmet_ls = {
           filetypes = { 'antlers.php', 'antlers.html', 'antlers', 'blade.html.php', 'blade', 'html', 'sass', 'scss', 'html', 'css', 'svelte' },
         },
-        eslint = {},
         ruff = {
           on_attach = function(client)
             if client.name == 'ruff' then
@@ -233,27 +241,21 @@ return {
             },
           },
         },
-        ts_ls = {
-          filetypes = { 'javascript', 'typescript' },
-          root_dir = function(bufnr, on_dir)
-            local root_markers =
-              { 'tsconfig.json', 'jsconfig.json', 'package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml', 'bun.lockb', 'bun.lock' }
-            root_markers = vim.fn.has 'nvim-0.11.3' == 1 and { root_markers, { '.git' } } or vim.list_extend(root_markers, { '.git' })
-            -- exclude deno
-            local deno_root = vim.fs.root(bufnr, { 'deno.json', 'deno.jsonc' })
-            local deno_lock_root = vim.fs.root(bufnr, { 'deno.lock' })
-            local project_root = vim.fs.root(bufnr, root_markers)
-            if deno_lock_root and (not project_root or #deno_lock_root > #project_root) then
-              return
-            end
-            if deno_root and (not project_root or #deno_root >= #project_root) then
-              return
-            end
-            on_dir(project_root or vim.fn.getcwd())
-          end,
-          commands = {
-            OrganizeImports = organize_imports_ts,
+        vtsls = {
+          settings = {
+            vtsls = {
+              autoUseWorkspaceTsdk = true,
+            },
           },
+          commands = {
+            OrganizeImports = organize_imports_vtsls,
+          },
+        },
+        oxlint = {
+          root_dir = function(bufnr, on_dir)
+            on_dir(vim.fs.root(bufnr, { 'package.json', '.git' }) or vim.fn.getcwd())
+          end,
+          workspace_required = false,
         },
         jsonls = {
           settings = {
@@ -324,7 +326,8 @@ return {
       end, ensure_installed)
       vim.list_extend(ensure_installed, {
         'pint', -- Used to format php and blade files
-        'prettierd', -- Used to format javascript and typescript files
+        'prettierd', -- Kept available for other filetypes
+        'oxfmt', -- Used to format javascript, typescript, svelte, css, json, html, and markdown files
         'stylua', -- Used to format lua code
       })
 
