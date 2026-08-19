@@ -125,19 +125,33 @@ return {
       },
     }
 
-    -- Workaround for Neovim 0.12: disable treesitter in markdown floating windows
-    -- (LSP hover, signature help) to avoid "attempt to call method 'range'" crash.
-    -- Normal markdown files (README.md, etc.) keep full treesitter highlighting.
-    vim.api.nvim_create_autocmd('BufWinEnter', {
-      callback = function(args)
-        if vim.bo[args.buf].filetype == 'markdown' then
-          local win = vim.api.nvim_get_current_win()
-          local cfg = vim.api.nvim_win_get_config(win)
-          if cfg.relative ~= '' then
-            vim.treesitter.stop(args.buf)
-          end
-        end
-      end,
-    })
+    -- Workaround for Neovim 0.12: the markdown injection directive can receive
+    -- an invalid node and crash with "attempt to call method 'range'".
+    -- Override it to gracefully skip injection when the node is unusable.
+    local non_filetype_match_injection_language_aliases = {
+      ex = 'elixir',
+      pl = 'perl',
+      sh = 'bash',
+      uxn = 'uxntal',
+      ts = 'typescript',
+    }
+    local function get_parser_from_markdown_info_string(injection_alias)
+      local match = vim.filetype.match { filename = 'a.' .. injection_alias }
+      return match or non_filetype_match_injection_language_aliases[injection_alias] or injection_alias
+    end
+    require('vim.treesitter.query').add_directive('set-lang-from-info-string!', function(match, _, bufnr, pred, metadata)
+      local capture_id = pred[2]
+      local node = match[capture_id]
+      if not node then
+        return
+      end
+      local ok, injection_alias = pcall(function()
+        return vim.treesitter.get_node_text(node, bufnr):lower()
+      end)
+      if not ok or not injection_alias then
+        return
+      end
+      metadata['injection.language'] = get_parser_from_markdown_info_string(injection_alias)
+    end, { force = true, all = false })
   end,
 }
