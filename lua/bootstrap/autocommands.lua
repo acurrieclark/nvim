@@ -12,12 +12,13 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- and enable c-j and c-k to move up and down
 vim.api.nvim_create_autocmd('BufEnter', {
   callback = function(event)
-    if vim.bo[event.buf].readonly or not vim.bo[event.buf].modifiable then
-      vim.api.nvim_buf_set_keymap(0, 'n', '<c-j>', '<Down>', { noremap = true, silent = true })
-      vim.api.nvim_buf_set_keymap(0, 'n', '<c-k>', '<Up>', { noremap = true, silent = true })
+    local buffer_options = vim.bo[event.buf]
+    if buffer_options.buftype ~= 'terminal' and (buffer_options.readonly or not buffer_options.modifiable) then
+      vim.api.nvim_buf_set_keymap(event.buf, 'n', '<c-j>', '<Down>', { noremap = true, silent = true })
+      vim.api.nvim_buf_set_keymap(event.buf, 'n', '<c-k>', '<Up>', { noremap = true, silent = true })
       -- some buffers already have a q mapping
-      if vim.o.filetype ~= 'neo-tree' then
-        vim.api.nvim_buf_set_keymap(0, 'n', 'q', '<cmd>q!<cr>', { noremap = true, silent = true })
+      if buffer_options.filetype ~= 'neo-tree' then
+        vim.api.nvim_buf_set_keymap(event.buf, 'n', 'q', '<cmd>q!<cr>', { noremap = true, silent = true })
       end
     end
   end,
