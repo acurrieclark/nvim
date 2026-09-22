@@ -198,6 +198,10 @@ return {
         angularls = {
           root_markers = { 'angular.json', 'project.json' },
         },
+        coln = {
+          cmd = { 'coln', 'language-server' },
+          filetypes = { 'coln' },
+        },
         denols = {
           root_markers = { 'deno.json', 'deno.jsonc', 'deno.lock' },
           commands = {
@@ -316,7 +320,7 @@ return {
       -- `dependencies` table for `nvim-lspconfig` above.
 
       -- Servers that Mason cannot install (e.g., Composer packages)
-      local mason_skip = { 'laravel_lsp' }
+      local mason_skip = { 'laravel_lsp', 'coln' }
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.

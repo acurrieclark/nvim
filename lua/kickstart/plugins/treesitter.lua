@@ -52,7 +52,7 @@ return {
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
         additional_vim_regex_highlighting = { 'ruby' },
       },
-      indent = { enable = true, disable = { 'ruby', 'typescript', 'tsx' } },
+      indent = { enable = true, disable = { 'ruby', 'typescript', 'tsx', 'svelte' } },
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -122,6 +122,7 @@ return {
         ['.*%.antlers%.php'] = 'antlers.php',
         ['.*%.antlers%.html'] = 'antlers.html',
         ['.*%.blade%.php'] = 'blade',
+        ['.*%.coln'] = 'coln',
       },
     }
 
