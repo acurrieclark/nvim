@@ -15,6 +15,7 @@ return {
       end,
     },
     { 'nvim-telescope/telescope-ui-select.nvim' },
+    { 'nvim-telescope/telescope-live-grep-args.nvim', version = '^1.0.0' },
     { 'nvim-tree/nvim-web-devicons' },
   },
   config = function()
@@ -64,6 +65,9 @@ return {
           },
         },
         fzf = {},
+        live_grep_args = {
+          auto_quoting = true,
+        },
       },
       defaults = {
         path_display = { 'smart' },
@@ -96,6 +100,7 @@ return {
     -- Enable telescope fzf native, if installed
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
+    pcall(require('telescope').load_extension, 'live_grep_args')
     pcall(require('telescope').load_extension 'smart_open')
 
     local telescope_functions = require 'telescope.functions'
@@ -164,7 +169,9 @@ return {
     vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'All Files' })
     vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Help' })
     vim.keymap.set('n', '<leader>fw', builtin.grep_string, { desc = 'Find Current Word' })
-    vim.keymap.set('n', '<leader>fs', builtin.live_grep, { desc = 'Grep' })
+    vim.keymap.set('n', '<leader>fs', function()
+      require('telescope').extensions.live_grep_args.live_grep_args()
+    end, { desc = 'Grep' })
     vim.keymap.set('n', '<leader>fS', ':LiveGrepGitRoot<cr>', { desc = 'Grep on Git Root' })
     vim.keymap.set('n', '<leader>fp', builtin.resume, { desc = 'Resume Search' })
     vim.keymap.set('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })

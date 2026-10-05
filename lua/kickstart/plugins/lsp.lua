@@ -31,6 +31,15 @@ return {
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
+          local client = vim.lsp.get_client_by_id(event.data.client_id)
+          local is_typescript = vim.bo[event.buf].filetype == 'typescript' or vim.bo[event.buf].filetype == 'typescriptreact'
+
+          -- inc-rename only sends the rename request to the first capable client.
+          -- Keep vtsls as the authoritative rename provider for TypeScript buffers.
+          if is_typescript and client and client.name ~= 'vtsls' then
+            client.server_capabilities.renameProvider = false
+          end
+
           -- NOTE: Remember that lua is a real programming language, and as such it is possible
           -- to define small helper and utility functions so you don't have to repeat yourself
           -- many times.
@@ -95,8 +104,6 @@ return {
           --    See `:help CursorHold` for information about when this is executed
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
-          local client = vim.lsp.get_client_by_id(event.data.client_id)
-
           if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
